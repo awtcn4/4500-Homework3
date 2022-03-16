@@ -1,0 +1,322 @@
+//Java to compile
+//Names: Andrew Taylor
+//Date: 2/17/2022
+//Class: 4500: Intro to software profession
+//What program is designed to do: check if the input given is both
+//a happy base 10 number and a prime. If it is I check the cases 
+//given in the project description and run the calculations given
+//with each case
+//Main Data Structures: Array-Multiple arrays are used to check the happy primes, and the gaps.
+//External Files: None
+
+import java.util.Scanner;
+
+public class Main {
+
+	public static void main(String[] args) {
+		
+		int x;
+		int y;
+		
+		//Prints the intro text
+		printIntro();
+		
+		//Gets lower bound
+		x = getLowerBound();
+		
+		//gets upper bound
+		y = getUpperBound();
+		
+		//Makes sure the lower bound is the lower bound
+		if(x > y) {
+			while(x > y) {
+			System.out.println("You made the lower bound greater than the higher bound. Try Again");
+			x = getLowerBound();
+			y = getUpperBound();
+			}
+		}
+		
+		//Runs all the calculations for numbers and gaps
+		runCalculations(x,y);
+		
+	}
+
+	//Finds all happy primes
+	private static void runCalculations(int x, int y) {
+		
+		int happyPrimes = 0;
+		
+		for(int i = x; i <= y; i++) {
+			if(isPrime(i) && isHappy(i)) {
+				happyPrimes++;
+			}
+		}
+		
+		runCases(happyPrimes, x, y);
+		
+	}
+
+	//Checks all cases: A B C D
+	private static void runCases(int happyPrimes, int x, int y) {
+		
+		int[] happyPrimesArray = new int[happyPrimes];
+		int index = 0;
+		
+		for(int i = x; i <= y; i++) {
+			if(isPrime(i) && isHappy(i)) {
+				happyPrimesArray[index] = i;
+				index++;
+			}
+		}
+		
+		//CASE A
+		if(happyPrimes == 0) {
+			System.out.println("There are no happy primes between " + x + " and " + y);
+			System.out.println("--End of Program--");
+			System.exit(0);
+		}
+		
+		//CASE B
+		if(happyPrimes == 1) {
+			System.out.println("There is one happy prime between " + x + " and " + y + ": " + happyPrimesArray[0]);
+			System.out.println("--End of Program--");
+			System.exit(0);
+		}
+		
+		//CASE C
+		if(happyPrimes == 2) {
+			System.out.println("There are two happy primes between " + x + " and " + y + ": " + happyPrimesArray[0] + " and " + happyPrimesArray[1]);
+			System.out.println("There are " + (happyPrimesArray[1] - happyPrimesArray[0]) + " between the two numbers!" );
+			System.out.println("--End of Program--");
+			System.exit(0);		
+		}
+		
+		
+		//CASE D
+		if(happyPrimes >= 3) {
+			System.out.print("There are " + happyPrimes + " happy primes between " + x + " and " + y + " : ");
+			for(int i = 0; i < happyPrimesArray.length; i++) {
+				
+				if(i == (happyPrimesArray.length - 1)) {
+					
+					System.out.println(happyPrimesArray[i]);
+					
+				}else {
+				
+				System.out.print(happyPrimesArray[i] + ", ");
+				
+				}
+			}
+			
+			//Finds Gap Sizes
+			
+			System.out.println("");
+			System.out.println("There are " + (happyPrimes - 1) + " gaps");
+			
+			System.out.print("The gap sizes are: ");
+			gapCalculations(happyPrimesArray, happyPrimes);
+			
+		}
+	}
+
+	//Does all the calculations for the gaps
+	private static void gapCalculations(int[] happyPrimesArray, int happyPrimes) {
+		
+		int[] gapsArray = new int[happyPrimes - 1];
+		
+		for(int i = 0; i < (happyPrimesArray.length - 1); i++) {
+			
+			if(i == (happyPrimesArray.length - 2)) {
+				
+				gapsArray[i] = (happyPrimesArray[i+1] - happyPrimesArray[i]);
+				System.out.println(gapsArray[i]);
+				
+			}else {
+			
+			gapsArray[i] = (happyPrimesArray[i+1] - happyPrimesArray[i]);
+			System.out.print(gapsArray[i] + ", ");
+			
+			}
+		}
+		
+		double average = 0;
+		System.out.print("The average gap size is: ");
+		for(int j = 0; j < gapsArray.length; j++) {
+			average += gapsArray[j];
+		}
+		
+		System.out.println(average / (gapsArray.length));
+		
+		
+		//Finds Largest gap
+		
+		System.out.print("The largest gap is: ");
+		
+		int tempLarge = gapsArray[0];
+		for(int k = 0; k < gapsArray.length; k++) {
+			
+			if(gapsArray[k] > tempLarge) {
+				tempLarge = gapsArray[k];
+			}
+			
+		}
+		
+		System.out.println(tempLarge);
+		
+		//Finds Smallest Gap
+		
+		System.out.print("The smallest gap is: ");
+		
+		int tempSmall = gapsArray[0];
+		for(int p = 0; p < gapsArray.length; p++) {
+			
+			if(gapsArray[p] < tempSmall) {
+				tempSmall = gapsArray[p];
+			}
+			
+		}
+		
+		System.out.println(tempSmall);
+		
+		//Finds Median
+		System.out.print("The median gap is: ");
+		
+		int median = 0;
+		
+		if((gapsArray.length % 2) == 0) {
+			median = (gapsArray[gapsArray.length/2-1] + gapsArray[gapsArray.length/2]) / 2;
+			
+		}else {
+			median = gapsArray[(gapsArray.length + 1) / 2 - 1];
+		}
+		
+		System.out.println(median);
+		System.out.println("--End of Program--");
+		
+	}
+
+	//Code from https://www.codevscolor.com/java-check-if-number-happy
+	private static boolean isHappy(int i) {
+
+		if (i <= 0) {
+            return false;
+        }
+        while (!(i == 1 || i == 4)) {
+            i = findSumDigitSquare(i);
+        }
+        
+        return (i == 1);
+	}
+
+	//Code from https://www.codevscolor.com/java-check-if-number-happy
+	private static int findSumDigitSquare(int i) {
+		int sum = 0;
+        int lastDigit;
+        while (i > 0) {
+            lastDigit = i % 10;
+            sum += lastDigit * lastDigit;
+            i /= 10;
+        }
+        return sum;
+	}
+
+	
+	//Code from https://www.geeksforgeeks.org/java-program-to-check-if-a-number-is-prime-or-not/
+	private static boolean isPrime(int i) {
+		
+		 // Corner case
+        if (i <= 1)
+            return false;
+  
+        // Check from 2 to n-1
+        for (int n = 2; n < i; n++)
+            if (i % n == 0)
+                return false;
+  
+        return true;
+	}
+
+	//Gets the upper bound
+	private static int getUpperBound() {
+		
+		boolean invalid = false;
+		String yString;
+		//TODO validate input
+		
+		int y = 0;
+		
+		Scanner scan = new Scanner(System.in);
+		
+		System.out.print("Please enter a number for the upper bound (1 - 1,000,000): ");
+		
+		if(scan.hasNextInt()) {
+		y = scan.nextInt();
+		
+		if((y < 1) || (y > 1000000)) {
+			while((y < 1) || (y > 1000000)) {
+				System.out.println("Input was invalid, please enter a number between (1-1000000): ");
+				y = scan.nextInt();
+			}
+			}
+		}else {
+			do {
+				System.out.println("Input was invalid, please enter a number between (1-1000000): ");
+				yString = scan.next();
+				if(scan.hasNextInt()) {
+					y = scan.nextInt();
+					invalid = false;
+				}else {
+					invalid = true;
+				}
+				}while(invalid == true);
+			}
+		return y;
+	}
+
+	//Gets the lower bound
+	private static int getLowerBound() {
+		
+		String xString;
+		boolean invalid = false;
+		
+		//TODO validate input
+		
+		int x = 0;
+		
+		Scanner scan = new Scanner(System.in);
+		
+		System.out.print("Please enter a number for the lower bound (1 - 1,000,000): ");
+		if(scan.hasNextInt()) {
+			x = scan.nextInt();
+		if((x < 1) || (x > 1000000)) {
+			while((x < 1) || (x > 1000000)) {
+				System.out.println("Input was invalid, please enter a number between (1-1000000): ");
+				x = scan.nextInt();
+			}
+			}
+		}else {
+			do {
+				System.out.println("Input was invalid, please enter a number between (1-1000000): ");
+				xString = scan.next();
+				if(scan.hasNextInt()) {
+					x = scan.nextInt();
+					invalid = false;
+				}else {
+					invalid = true;
+				}
+				}while(invalid == true);
+			}
+		
+		//scan.close();
+		
+		return x;
+	}
+
+	private static void printIntro() {
+		
+		System.out.println("A 10-happy prime is a number that is both a base 10 happy number (number onnly reaches one when replaced by the square of each digit) and a prime.");
+		System.out.println("This program will tell you the happy primes between the two bounds that you give between 1 and 1,000,000 (inclusive)");
+		
+	}
+	
+}
